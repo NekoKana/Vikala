@@ -2,7 +2,7 @@ from typing import Tuple
 import api.server
 from .data_headers import DataHeaders
 from .result_code import ResultCode
-from .endpoint import Information, SignUp, Login, GetUser, AddTopics, GetCity, CreateRoom, SearchRoomsByPrefecture
+from .endpoint import Information, SignUp, Login, GetUser, AddTopics, GetCity, CreateRoom, GetRoom, SearchRoomsByPrefecture
 from .models.user import User
 from .models.room import Room
 from .user_manager import UserManager
@@ -143,6 +143,33 @@ class Handler:
                 )
             else:
                 return self.error(ResultCode.RC_CREATE_ROOM_ERROR, 'The token is invalied.')
+
+    def handle_get_room(self, request: dict):
+        endpoint: GetRoom = GetRoom.request(request)
+        if endpoint is None:
+            return self.error(ResultCode.RC_GET_ROOM_ERROR, 'The field is invalied.')
+        else:
+            user_id = endpoint.user_id
+            token = endpoint.token
+            if UserManager.validate(user_id, token):
+                room = RoomManager.get_room(endpoint.room_id)
+                if room is None:
+                    return self.error(ResultCode.RC_GET_ROOM_ERROR, 'The room is not found.')
+                else:
+                    endpoint.room_name = room.room_name
+                    endpoint.room_description = room.room_description
+                    endpoint.pref_id = room.pref_id
+                    endpoint.city_id = room.city_id
+                    endpoint.topic_id_1 = room.topic_id_1
+                    endpoint.topic_id_2 = room.topic_id_2
+                    endpoint.topic_id_3 = room.topic_id_3
+
+                    return self.success(
+                        DataHeaders(user_id, token).to_dict(ResultCode.RC_SUCCESS),
+                        endpoint.response()
+                    )
+            else:
+                return self.error(ResultCode.RC_GET_ROOM_ERROR, 'The token is invalied.')
 
     def handle_404(self):
         return self.error(404, "Not found")

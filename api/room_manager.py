@@ -12,6 +12,13 @@ class RoomManager:
         session.commit()
 
     @classmethod
+    def get_room(cls, room_id: int) -> Room:
+        room: Room = session.query(Room). \
+                    filter(Room.room_id == room_id). \
+                    first()
+        return room
+
+    @classmethod
     def delete_room(cls, room_id: int) -> bool:
         room: Room = session.query(Room). \
                     filter(Room.room_id == room_id). \

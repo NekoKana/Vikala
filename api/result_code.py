@@ -7,6 +7,7 @@ class ResultCode:
     RC_GET_CITY_ERROR                   = 204
     RC_CREATE_ROOM_ERROR                = 205
     RC_SEARCH_ROOM_BY_PREFECTURE_ERROR  = 206
+    RC_GET_ROOM_ERROR                   = 207
 
     RC_ERROR                            = 400
     RC_NOT_FOUND                        = 404
