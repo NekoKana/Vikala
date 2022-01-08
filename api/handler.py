@@ -2,9 +2,11 @@ from typing import Tuple
 import api.server
 from .data_headers import DataHeaders
 from .result_code import ResultCode
-from .endpoint import Information, SignUp, Login, GetUser, AddTopics, GetCity
+from .endpoint import Information, SignUp, Login, GetUser, AddTopics, GetCity, CreateRoom
 from .models.user import User
+from .models.room import Room
 from .user_manager import UserManager
+from .room_manager import RoomManager
 from .city_provider import CityProvider
 from flask import jsonify, make_response, abort
 
@@ -108,6 +110,22 @@ class Handler:
                     endpoint.response()
                 )
             
+    def handle_create_room(self, request: dict):
+        endpoint: CreateRoom = CreateRoom.request(request)
+        if endpoint is None:
+            return self.error(ResultCode.RC_CREATE_ROOM_ERROR, 'The field is invalied.')
+        else:
+            room: Room = RoomManager.create_room(endpoint.room_name, endpoint.pref_id, endpoint.city_id,
+                                                endpoint.user_id, endpoint.token, endpoint.topic_id_1,
+                                                endpoint.topic_id_2, endpoint.topic_id_3, endpoint.room_description)
+            if room is None:
+                return self.error(ResultCode.RC_CREATE_ROOM_ERROR, 'The token is invalied.')
+            else:
+                endpoint.room_id = room.room_id
+                return self.success(
+                    DataHeaders(endpoint.user_id, endpoint.token).to_dict(ResultCode.RC_SUCCESS),
+                    endpoint.response()
+                )
 
     def handle_404(self):
         return self.error(404, "Not found")

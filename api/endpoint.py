@@ -183,6 +183,71 @@ class GetCity(Post):
         except InvaliedTypeException:
             return None
 
+class CreateRoom(Post):
+    room_id: int
+    room_name: str
+    room_description: str
+    pref_id: int
+    city_id: int
+    topic_id_1: int
+    topic_id_2: int
+    topic_id_3: int
+
+    user_id: int
+    token: str
+
+    def __init__(self, room_name: str, room_description: str, pref_id: int, city_id: int, 
+                topic_id_1: int, topic_id_2: int, topic_id_3: int, user_id: int, token: str):
+        self.room_name = room_name
+        self.room_description = room_description
+        self.pref_id = pref_id
+        self.city_id = city_id
+        self.topic_id_1 = topic_id_1
+        self.topic_id_2 = topic_id_2
+        self.topic_id_3 = topic_id_3
+
+        self.user_id = user_id
+        self.token = token
+
+    def response(self):
+        return {
+            'room_id': self.room_id
+        }
+
+    @classmethod
+    def request(cls, dic: dict):
+        try:
+            room_description = None
+
+            if 'room_description' in dic:
+                room_description = Validator.validate_str(dic['room_description'])
+
+            topic_id_1 = Validator.validate_int(dic['topic_id_1'])
+            topic_id_2 = None
+            topic_id_3 = None
+
+            if 'topic_id_2' in dic:
+                topic_id_2 = Validator.validate_int(dic['topic_id_2'])
+
+            if 'topic_id_3' in dic:
+                topic_id_3 = Validator.validate_int(dic['topic_id_3'])
+
+            return CreateRoom(room_name=Validator.validate_str(dic['room_name']),
+                            room_description=room_description,
+                            pref_id=Validator.validate_int(dic['pref_id']),
+                            city_id=Validator.validate_int(dic['city_id']),
+                            topic_id_1=topic_id_1,
+                            topic_id_2=topic_id_2,
+                            topic_id_3=topic_id_3,
+                            user_id=Validator.validate_int(dic['user_id']),
+                            token=Validator.validate_str(dic['token']))
+        except KeyError:
+            return None
+        except TypeError:
+            return None
+        except InvaliedTypeException:
+            return None
+
 class Validator:
     @classmethod
     def validate_int(cls, i: int):

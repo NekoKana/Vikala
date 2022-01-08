@@ -1,6 +1,6 @@
 from flask import Flask, request
 from flask_cors import CORS
-from .endpoint import Information, SignUp, Login, GetUser, AddTopics, GetCity
+from .endpoint import Information, SignUp, Login, GetUser, AddTopics, GetCity, CreateRoom
 from .handler import Handler
 from .config import Model, ENGINE, session
 
@@ -38,6 +38,10 @@ def add_topics():
 @app.route('/get_city', methods=GetCity.http_method())
 def get_city():
     return handler.handle_get_city(request.json)
+
+@app.route('/create_room', methods=CreateRoom.http_method())
+def create_room():
+    return handler.handle_create_room(request.json)
 
 @app.errorhandler(404)
 def not_found(error):
