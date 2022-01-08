@@ -54,3 +54,35 @@ Neon 用の Web API です。
 - city: list
   - city_id: int
   - city_name: string
+
+### ルーム作成 （ /create_room ）
+### リクエスト
+- room_name: str
+- pref_id: int
+- city_id: int
+- user_id: int
+- token: str
+- room_description: str (optional)
+- topic_id_1: int
+- topic_id_2: int (optional)
+- topic_id_3: int (optional)
+
+### レスポンス
+- room_id: int
+
+### 県IDからルーム一覧を取得 ( /search_rooms_by_prefecture )
+### リクエスト
+- pref_id: int
+- user_id: int
+- token: str
+
+### レスポンス
+- rooms: list
+  - room_id: int
+  - room_name: str
+  - room_description: str
+  - pref_id: int
+  - city_id: int
+  - topic_id_1: int
+  - topic_id_2: int
+  - topic_id_3: int
