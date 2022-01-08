@@ -2,9 +2,10 @@ from typing import Tuple
 import api.server
 from .data_headers import DataHeaders
 from .result_code import ResultCode
-from .endpoint import Information, SignUp, Login, GetUser, AddTopics
+from .endpoint import Information, SignUp, Login, GetUser, AddTopics, GetCity
 from .models.user import User
 from .user_manager import UserManager
+from .city_provider import CityProvider
 from flask import jsonify, make_response, abort
 
 class Handler:
@@ -83,6 +84,30 @@ class Handler:
                 )
             else:
                 return self.error(ResultCode.RC_GET_USER_ERROR, 'Token is not corrent.')
+
+    def handle_get_city(self, request: dict):
+        endpoint: GetCity = GetCity.request(request)
+        if endpoint is None:
+            return self.error(ResultCode.RC_GET_CITY_ERROR, 'The field is invalied.')
+        else:
+            pref_id: int = endpoint.pref_id
+            cities: list = CityProvider.get_cities_by_pref_id(pref_id)
+            if not cities:
+                return self.error(ResultCode.RC_GET_CITY_ERROR, 'The pref_id is invalied.')
+            else:
+                endpoint.city = []
+                for city in cities:
+                    endpoint.city.append(
+                        {
+                            "city_id": city.city_id,
+                            "city_name": city.city_name
+                        }
+                    )
+                return self.success(
+                    DataHeaders(-1, "").to_dict(ResultCode.RC_SUCCESS),
+                    endpoint.response()
+                )
+            
 
     def handle_404(self):
         return self.error(404, "Not found")

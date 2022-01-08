@@ -1,11 +1,13 @@
 from flask import Flask, request
-from .endpoint import Information, SignUp, Login, GetUser, AddTopics
+from flask_cors import CORS
+from .endpoint import Information, SignUp, Login, GetUser, AddTopics, GetCity
 from .handler import Handler
 from .config import Model, ENGINE, session
 
 app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
 app.config["JSON_SORT_KEYS"] = False
+CORS(app)
 handler = Handler()
 VERSION = 1.0
 
@@ -32,6 +34,10 @@ def get_user():
 @app.route('/add_topics', methods=AddTopics.http_method())
 def add_topics():
     return handler.handle_add_topics(request.json)
+
+@app.route('/get_city', methods=GetCity.http_method())
+def get_city():
+    return handler.handle_get_city(request.json)
 
 @app.errorhandler(404)
 def not_found(error):

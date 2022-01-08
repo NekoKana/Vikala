@@ -160,6 +160,29 @@ class AddTopics(Post):
         except InvaliedTypeException:
             return None
 
+class GetCity(Post):
+    pref_id: int
+    city: list
+
+    def __init__(self, pref_id: int):
+        self.pref_id = pref_id
+
+    def response(self):
+        return {
+            'city': self.city
+        }
+
+    @classmethod
+    def request(cls, dic: dict):
+        try:
+            return GetCity(pref_id=Validator.validate_int(dic['pref_id']))
+        except KeyError:
+            return None
+        except TypeError:
+            return None
+        except InvaliedTypeException:
+            return None
+
 class Validator:
     @classmethod
     def validate_int(cls, i: int):
