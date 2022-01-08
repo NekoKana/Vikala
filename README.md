@@ -36,3 +36,12 @@ Neon 用の Web API です。
 - birthday: int
 - city: int
 - topic: int[]
+
+### ユーザにトピックを追加 ( /add_topics )
+#### リクエスト
+- user_id: int
+- token: string
+- topics: int[]
+
+#### レスポンス
+なし
