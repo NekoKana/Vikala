@@ -403,6 +403,36 @@ class GetUsersByRoomId(Post):
         except InvaliedTypeException:
             return None
 
+class RenameRoom(Post):
+    room_id: int
+    new_name: str
+
+    user_id: int
+    token: str
+
+    def __init__(self, room_id: int, new_name: str, user_id: int, token: str):
+        self.room_id = room_id
+        self.new_name = new_name
+        self.user_id = user_id
+        self.token = token
+
+    def response(self):
+        return []
+
+    @classmethod
+    def request(cls, dic: dict):
+        try:
+            return RenameRoom(room_id=Validator.validate_int(dic['room_id']),
+                            new_name=Validator.validate_str(dic['new_name']),
+                            user_id=Validator.validate_int(dic['user_id']),
+                            token=Validator.validate_str(dic['token']))
+        except KeyError:
+            return None
+        except TypeError:
+            return None
+        except InvaliedTypeException:
+            return None
+
 class Validator:
     @classmethod
     def validate_int(cls, i: int):

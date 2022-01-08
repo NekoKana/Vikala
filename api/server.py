@@ -1,7 +1,8 @@
 from flask import Flask, request
 from flask_cors import CORS
 from .endpoint import Information, SignUp, Login, GetUser, AddTopics, GetCity, \
-CreateRoom, GetRoom, SearchRoomsByPrefecture, SearchRoomsByCity, GetRoomsByUserId, GetUsersByRoomId
+CreateRoom, GetRoom, SearchRoomsByPrefecture, SearchRoomsByCity, GetRoomsByUserId, \
+GetUsersByRoomId, RenameRoom
 from .handler import Handler
 from .config import Model, ENGINE, session
 
@@ -63,6 +64,11 @@ def search_rooms_by_prefecture():
 @app.route('/search_rooms_by_city', methods=SearchRoomsByCity.http_method())
 def search_rooms_by_city():
     return handler.handle_search_rooms_by_city(request.json)
+
+@app.route('/rename_room', methods=RenameRoom.http_method())
+def rename_room():
+    return handler.handle_rename_room(request.json)
+
 
 @app.errorhandler(404)
 def not_found(error):
