@@ -2,7 +2,7 @@ from typing import Tuple
 import api.server
 from .data_headers import DataHeaders
 from .result_code import ResultCode
-from .endpoint import Information, SignUp, Login
+from .endpoint import Information, SignUp, Login, GetUser
 from .models.user import User
 from .user_manager import UserManager
 from flask import jsonify, make_response, abort
@@ -16,12 +16,12 @@ class Handler:
         )
 
     def handle_signup(self, request: dict):
-        print(request)
         endpoint: SignUp = SignUp.request(request)
         if endpoint is None:
             return self.error(ResultCode.RC_SIGNUP_ERROR, 'The field is invalied.')
         else:
-            (user, token) = UserManager.generate(endpoint.name, endpoint.email, endpoint.password, endpoint.birthday, endpoint.city)
+            (user, token) = UserManager.generate(endpoint.name, endpoint.email, endpoint.password,
+                                                 endpoint.birthday, endpoint.city, endpoint.topic_list)
             endpoint.user_id = user.user_id
             endpoint.token = token.token
             return self.success(
@@ -45,6 +45,26 @@ class Handler:
                     DataHeaders(user.user_id, token.token).to_dict(ResultCode.RC_SUCCESS),
                     endpoint.response()
                 )
+
+    def handle_get_user(self, request: dict):
+        endpoint: GetUser = GetUser.request(request)
+        if endpoint is None:
+            return self.error(ResultCode.RC_GET_USER_ERROR, 'The field is invalied.')
+        else:
+            if UserManager.validate(endpoint.user_id, endpoint.token):
+                user: User = UserManager.get_user_by_user_id(endpoint.user_id)
+                endpoint.name = user.name
+                endpoint.email = user.email
+                endpoint.birthday = user.birthday
+                endpoint.city = user.city
+                endpoint.topic = [topic.id for topic in UserManager.get_topics(user.user_id)]
+                
+                return self.success(
+                    DataHeaders(user.user_id, endpoint.token).to_dict(ResultCode.RC_SUCCESS),
+                    endpoint.response()
+                )
+            else:
+                return self.error(ResultCode.RC_GET_USER_ERROR, 'Token is not corrent.')
 
     def handle_404(self):
         return self.error(404, "Not found")

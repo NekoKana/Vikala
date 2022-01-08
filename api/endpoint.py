@@ -99,6 +99,41 @@ class Login(Post):
         except InvaliedTypeException:
             return None
 
+class GetUser(Post):
+    user_id: int
+    token: str
+    name: str
+    email: str
+    birthday: int
+    city: int
+    topic: list
+
+    def __init__(self, user_id: int, token: str):
+        self.user_id = user_id
+        self.token = token
+
+    def response(self):
+        return {
+            "name": self.name,
+            "user_id": self.user_id,
+            "email": self.email,
+            "birthday": self.birthday,
+            "city": self.city,
+            "topic": self.topic
+        }
+
+    @classmethod
+    def request(cls, dic: dict):
+        try:
+            return GetUser(user_id=Validator.validate_int(dic['user_id']),
+                          token=Validator.validate_str(dic['token']))
+        except KeyError:
+            return None
+        except TypeError:
+            return None
+        except InvaliedTypeException:
+            return None
+
 class Validator:
     @classmethod
     def validate_int(cls, i: int):

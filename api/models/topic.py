@@ -6,9 +6,10 @@ class Topic(Model):
     __tablename__ = 'topic'
 
     id = Column('id', Integer, primary_key=True, autoincrement=True)
-    user_id = Column('topic_id', Integer, nullable=False)
-    topic_name = Column('topic_name', String(50), nullable=False)
+    user_id = Column('user_id', Integer, nullable=False)
+    topic_id = Column('topic_id', Integer, nullable=False)
 
-    def __init__(self, user_id: int, natopic_nameme: str):
+    def __init__(self, user_id: int, topic_id: int):
         self.user_id = user_id
-        self.topic_name = topic_name
+        self.topic_id = topic_id
+        

@@ -3,16 +3,17 @@ from typing import Tuple
 from .config import session
 from .models.user import User
 from .models.token import Token
+from .models.topic import Topic
 from .token_factory import TokenFactory
 
 class UserManager:
     @classmethod
-    def insert(cls, user: User):
-        session.add(user)
+    def insert(cls, model):
+        session.add(model)
         session.commit()
 
     @classmethod
-    def delete(cls, user: User):
+    def delete_user(cls, user: User):
         session.query(User). \
                 filter(User.viewer_id == user.viewer_id and User.user_id == user.user_id). \
                 delete()
@@ -36,7 +37,7 @@ class UserManager:
 
     @classmethod
     def has_user_id(cls, id: int) -> bool:
-        for user in cls.get_all():
+        for user in cls.get_all_user():
             if user.user_id == id:
                 return True
         return False
@@ -49,14 +50,38 @@ class UserManager:
 
     @classmethod
     def has_email(cls, email: str) -> bool:
-        for user in cls.get_all():
+        for user in cls.get_all_user():
             if user.email == email:
                 return True
         return False
 
     @classmethod
-    def get_all(cls) -> list:
+    def add_topic(cls, user_id: int, topic_id: int):
+        topic = Topic(user_id, topic_id)
+        cls.insert(topic)
+
+    @classmethod
+    def get_topics(cls, user_id: int) -> list:
+        topics = session.query(Topic).filter(Topic.user_id == user_id).all()
+        return topics
+
+    @classmethod
+    def validate(cls, user_id: int, token: str) -> bool:
+        if cls.has_user_id(user_id):
+            res = session.query(Token).filter(Token.user_id == user_id).all()
+            for r in res:
+                if r.token == token:
+                    return True
+        return False
+
+
+    @classmethod
+    def get_all_user(cls) -> list:
         return session.query(User).all()
+
+    @classmethod
+    def get_all_token(cls) -> list:
+        return session.query(Token).all()
 
     @classmethod
     def login(cls, email: str, password: str) -> Tuple:
@@ -69,12 +94,16 @@ class UserManager:
         return None
 
     @classmethod
-    def generate(cls, name: str, email: str, password: str, birthday: int, city: int) -> Tuple:
+    def generate(cls, name: str, email: str, password: str, birthday: int, city: int, topics: list) -> Tuple:
         while True:
             user_id = random.randint(100000000, 999999999)
             if not (cls.has_user_id(user_id)):
                 user = User(user_id, name, email, password, birthday, city)
                 token = Token(user_id, TokenFactory.generate_token())
+
+                for topic_id in topics:
+                    cls.add_topic(user_id, topic_id)
+
                 cls.insert(user)
                 cls.insert(token)
 
