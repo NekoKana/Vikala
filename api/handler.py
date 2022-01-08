@@ -119,14 +119,11 @@ class Handler:
             room: Room = RoomManager.create_room(endpoint.room_name, endpoint.pref_id, endpoint.city_id,
                                                 endpoint.user_id, endpoint.token, endpoint.topic_id_1,
                                                 endpoint.topic_id_2, endpoint.topic_id_3, endpoint.room_description)
-            if room is None:
-                return self.error(ResultCode.RC_CREATE_ROOM_ERROR, 'The token is invalied.')
-            else:
-                endpoint.room_id = room.room_id
-                return self.success(
-                    DataHeaders(endpoint.user_id, endpoint.token).to_dict(ResultCode.RC_SUCCESS),
-                    endpoint.response()
-                )
+            endpoint.room_id = room.room_id
+            return self.success(
+                DataHeaders(endpoint.user_id, endpoint.token).to_dict(ResultCode.RC_SUCCESS),
+                endpoint.response()
+            )
 
     def handle_search_rooms_by_prefecture(self, request: dict):
         endpoint: SearchRoomsByPrefecture = SearchRoomsByPrefecture.request(request)
@@ -137,14 +134,11 @@ class Handler:
             token = endpoint.token
             if UserManager.validate(user_id, token):
                 rooms = RoomManager.get_rooms_by_prefecture(endpoint.pref_id)
-                if not rooms:
-                    return self.error(ResultCode.RC_SEARCH_ROOMS_BY_PREFECTURE_ERROR, 'The pref_id is invalied.')
-                else:
-                    endpoint.rooms = rooms
-                    return self.success(
-                        DataHeaders(endpoint.user_id, endpoint.token).to_dict(ResultCode.RC_SUCCESS),
-                        endpoint.response()
-                    )
+                endpoint.rooms = rooms
+                return self.success(
+                    DataHeaders(endpoint.user_id, endpoint.token).to_dict(ResultCode.RC_SUCCESS),
+                    endpoint.response()
+                )
             else:
                 return self.error(ResultCode.RC_SEARCH_ROOMS_BY_PREFECTURE_ERROR, 'The token is invalied.')
 
