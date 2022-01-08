@@ -12,6 +12,7 @@ class User(Model):
     password = Column('password', String(40), nullable=False)
     birthday = Column('birthday', Integer, nullable=True)
     city = Column('city', Integer, nullable=True)
+    bio = Column('bio', String(255), nullable=False, default="")
 
     def __init__(self, user_id: int, name: str, email: str, password: str, birthday: int, city: int):
         self.user_id = user_id
