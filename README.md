@@ -22,4 +22,17 @@ Neon 用の Web API です。
 
 #### レスポンス
 - user_id: int
+- token: 
+
+### ユーザ情報取得 ( /get_user )
+#### リクエスト
+- user_id: int
 - token: string
+
+#### レスポンス
+- name: string
+- user_id: int
+- email: string
+- birthday: int
+- city: int
+- topic: int[]
