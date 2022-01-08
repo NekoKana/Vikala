@@ -2,7 +2,7 @@ from typing import Tuple
 import api.server
 from .data_headers import DataHeaders
 from .result_code import ResultCode
-from .endpoint import Information, SignUp, Login, GetUser
+from .endpoint import Information, SignUp, Login, GetUser, AddTopics
 from .models.user import User
 from .user_manager import UserManager
 from flask import jsonify, make_response, abort
@@ -61,6 +61,24 @@ class Handler:
                 
                 return self.success(
                     DataHeaders(user.user_id, endpoint.token).to_dict(ResultCode.RC_SUCCESS),
+                    endpoint.response()
+                )
+            else:
+                return self.error(ResultCode.RC_GET_USER_ERROR, 'Token is not corrent.')
+
+    def handle_add_topics(self, request: dict):
+        endpoint: AddTopics = AddTopics.request(request)
+        if endpoint is None:
+            return self.error(ResultCode.RC_GET_USER_ERROR, 'The field is invalied.')
+        else:
+            if UserManager.validate(endpoint.user_id, endpoint.token):
+                topics_list = endpoint.topics
+
+                for topic_id in topics_list:
+                    UserManager.add_topic(endpoint.user_id, topic_id)
+                    
+                return self.success(
+                    DataHeaders(endpoint.user_id, endpoint.token).to_dict(ResultCode.RC_SUCCESS),
                     endpoint.response()
                 )
             else:

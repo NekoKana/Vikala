@@ -1,5 +1,5 @@
 from flask import Flask, request
-from .endpoint import Information, SignUp, Login, GetUser
+from .endpoint import Information, SignUp, Login, GetUser, AddTopics
 from .handler import Handler
 from .config import Model, ENGINE, session
 
@@ -28,6 +28,10 @@ def login():
 @app.route('/get_user', methods=GetUser.http_method())
 def get_user():
     return handler.handle_get_user(request.json)
+
+@app.route('/add_topics', methods=AddTopics.http_method())
+def add_topics():
+    return handler.handle_add_topics(request.json)
 
 @app.errorhandler(404)
 def not_found(error):

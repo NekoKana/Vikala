@@ -134,6 +134,32 @@ class GetUser(Post):
         except InvaliedTypeException:
             return None
 
+class AddTopics(Post):
+    user_id: int
+    token: str
+    topics: list
+
+    def __init__(self, user_id: int, token: str, topics: list):
+        self.user_id = user_id
+        self.token = token
+        self.topics = topics
+
+    def response(self):
+        return []
+
+    @classmethod
+    def request(cls, dic: dict):
+        try:
+            return AddTopics(user_id=Validator.validate_int(dic['user_id']),
+                          token=Validator.validate_str(dic['token']),
+                          topics=Validator.validate_list(dic['topics']))
+        except KeyError:
+            return None
+        except TypeError:
+            return None
+        except InvaliedTypeException:
+            return None
+
 class Validator:
     @classmethod
     def validate_int(cls, i: int):

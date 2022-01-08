@@ -74,7 +74,6 @@ class UserManager:
                     return True
         return False
 
-
     @classmethod
     def get_all_user(cls) -> list:
         return session.query(User).all()
