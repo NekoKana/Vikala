@@ -2,6 +2,7 @@ import random
 
 from .config import session
 from .models.room import Room
+from .models.user import User
 from .models.room_member import RoomMember
 from .user_manager import UserManager
 
@@ -59,7 +60,7 @@ class RoomManager:
 
     @classmethod
     def kick_member(cls, room_id: int, user_id: int) -> bool:
-        members = cls.get_members()
+        members = cls.get_members(room_id)
         if not members is None:
             for member in members:
                 if member.user_id == user_id:
@@ -67,6 +68,45 @@ class RoomManager:
                     session.commit()
                     return True
         return False
+
+    @classmethod
+    def get_rooms_by_user_id(cls, user_id: int) -> list:
+        members = session.query(RoomMember).all()
+        rooms = []
+
+        for member in members:
+            if member.member_id == user_id:
+                room: Room = cls.get_room(member.room_id)
+                rooms.append({
+                    'room_id': room.room_id,
+                    'room_name': room.room_name,
+                    'room_description': room.room_description,
+                    'pref_id': room.pref_id,
+                    'city_id': room.city_id,
+                    'topic_id_1': room.topic_id_1,
+                    'topic_id_2': room.topic_id_2,
+                    'topic_id_3': room.topic_id_3
+                })
+
+        return rooms
+
+    @classmethod
+    def get_users_by_room_id(cls, room_id: int) -> list:
+        members = session.query(RoomMember).all()
+        users = []
+
+        for member in members:
+            if member.room_id == room_id:
+                user: User = UserManager.get_user_by_user_id(member.member_id)
+                users.append({
+                    "name": user.name,
+                    "user_id": user.user_id,
+                    "email": user.email,
+                    "birthday": user.birthday,
+                    "city": user.city,
+                })
+        return users
+
 
     @classmethod
     def has_room(cls, room_id: int) -> bool:

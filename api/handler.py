@@ -2,7 +2,8 @@ from typing import Tuple
 import api.server
 from .data_headers import DataHeaders
 from .result_code import ResultCode
-from .endpoint import Information, SignUp, Login, GetUser, AddTopics, GetCity, CreateRoom, GetRoom, SearchRoomsByPrefecture
+from .endpoint import Information, SignUp, Login, GetUser, AddTopics, GetCity, \
+CreateRoom, GetRoom, SearchRoomsByPrefecture, GetRoomsByUserId, GetUsersByRoomId
 from .models.user import User
 from .models.room import Room
 from .user_manager import UserManager
@@ -170,6 +171,49 @@ class Handler:
                     )
             else:
                 return self.error(ResultCode.RC_GET_ROOM_ERROR, 'The token is invalied.')
+
+    def handle_get_rooms_by_user_id(self, request: dict):
+        endpoint: GetRoomsByUserId = GetRoomsByUserId.request(request)
+        if endpoint is None:
+            return self.error(ResultCode.RC_GET_ROOMS_BY_USER_ID_ERROR, 'The field is invalied.')
+        else:
+            user_id = endpoint.user_id
+            token = endpoint.token
+            if UserManager.validate(user_id, token):
+                rooms: list = RoomManager.get_rooms_by_user_id(user_id)
+                if not rooms:
+                    return self.error(ResultCode.RC_GET_ROOMS_BY_USER_ID_ERROR, 'The user_id is invalied.')
+                else:
+                    endpoint.rooms = rooms
+
+                    return self.success(
+                        DataHeaders(user_id, token).to_dict(ResultCode.RC_SUCCESS),
+                        endpoint.response()
+                    )
+            else:
+                return self.error(ResultCode.RC_GET_ROOM_ERROR, 'The token is invalied.')
+
+    def handle_get_users_by_room_id(self, request: dict):
+        endpoint: GetUsersByRoomId = GetUsersByRoomId.request(request)
+        if endpoint is None:
+            return self.error(ResultCode.RC_GET_USERS_BY_ROOM_ID_ERROR, 'The field is invalied.')
+        else:
+            user_id = endpoint.user_id
+            token = endpoint.token
+            if UserManager.validate(user_id, token):
+                users: list = RoomManager.get_users_by_room_id(endpoint.room_id)
+                if not users:
+                    return self.error(ResultCode.RC_GET_ROOMS_BY_USER_ID_ERROR, 'The room_id is invalied.')
+                else:
+                    endpoint.users = users
+
+                    return self.success(
+                        DataHeaders(user_id, token).to_dict(ResultCode.RC_SUCCESS),
+                        endpoint.response()
+                    )
+            else:
+                return self.error(ResultCode.RC_GET_ROOM_ERROR, 'The token is invalied.')
+
 
     def handle_404(self):
         return self.error(404, "Not found")

@@ -8,6 +8,8 @@ class ResultCode:
     RC_CREATE_ROOM_ERROR                = 205
     RC_SEARCH_ROOM_BY_PREFECTURE_ERROR  = 206
     RC_GET_ROOM_ERROR                   = 207
+    RC_GET_ROOMS_BY_USER_ID_ERROR       = 208
+    RC_GET_USERS_BY_ROOM_ID_ERROR       = 209
 
     RC_ERROR                            = 400
     RC_NOT_FOUND                        = 404
