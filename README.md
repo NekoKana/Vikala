@@ -86,3 +86,76 @@ Neon 用の Web API です。
   - topic_id_1: int
   - topic_id_2: int
   - topic_id_3: int
+
+### 市IDからルーム一覧を取得 ( /search_rooms_by_city )
+### リクエスト
+- city_id: int
+- user_id: int
+- token: str
+
+### レスポンス
+- rooms: list
+  - room_id: int
+  - room_name: str
+  - room_description: str
+  - pref_id: int
+  - city_id: int
+  - topic_id_1: int
+  - topic_id_2: int
+  - topic_id_3: int
+
+### ルーム情報を取得 ( /get_room )
+### リクエスト
+- room_id: int
+- user_id: int
+- token: str
+
+### レスポンス
+- room_id: int
+- room_name: str
+- room_description: str
+- pref_id: int
+- city_id: int
+- topic_id_1: int
+- topic_id_2: int
+- topic_id_3: int
+
+### ユーザが所属しているルームを取得 ( /get_rooms_by_user_id )
+### リクエスト
+- user_id: int
+- token: str
+
+### レスポンス
+- rooms: list
+  - room_id: int
+  - room_name: str
+  - room_description: str
+  - pref_id: int
+  - city_id: int
+  - topic_id_1: int
+  - topic_id_2: int
+  - topic_id_3: int
+
+### ルームに所属しているユーザを取得 ( /get_users_by_room_id )
+### リクエスト
+- room_id: int
+- user_id: int
+- token: str
+
+### レスポンス
+- users: list
+  - name: str
+  - user_id: int
+  - email: str
+  - birthday: int
+  - city: int
+
+### ルームの名前を変更 ( /rename_room )
+### リクエスト
+- room_id: int
+- new_name: str
+- user_id: int
+- token: str
+
+### レスポンス
+なし
