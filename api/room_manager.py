@@ -76,6 +76,27 @@ class RoomManager:
             return False
 
     @classmethod
+    def get_all_rooms(cls) -> list:
+        return session.query(Room).all()
+
+    @classmethod
+    def get_rooms_by_prefecture(cls, pref_id: int) -> list:
+        rooms = []
+        for room in cls.get_all_rooms():
+            if room.pref_id == pref_id:
+                rooms.append({
+                    'room_id': room.room_id,
+                    'room_name': room.room_name,
+                    'room_description': room.room_description,
+                    'pref_id': room.pref_id,
+                    'city_id': room.city_id,
+                    'topic_id_1': room.topic_id_1,
+                    'topic_id_2': room.topic_id_2,
+                    'topic_id_3': room.topic_id_3
+                })
+        return rooms
+
+    @classmethod
     def create_room(cls, room_name: str, pref_id: int, city_id: int, user_id: int, token: str, 
                     topic_id_1: int, topic_id_2: int = None, topic_id_3: int = None, room_description: str = None) -> Room:
         if UserManager.validate(user_id, token):

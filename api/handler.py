@@ -2,7 +2,7 @@ from typing import Tuple
 import api.server
 from .data_headers import DataHeaders
 from .result_code import ResultCode
-from .endpoint import Information, SignUp, Login, GetUser, AddTopics, GetCity, CreateRoom
+from .endpoint import Information, SignUp, Login, GetUser, AddTopics, GetCity, CreateRoom, SearchRoomsByPrefecture
 from .models.user import User
 from .models.room import Room
 from .user_manager import UserManager
@@ -126,6 +126,23 @@ class Handler:
                     DataHeaders(endpoint.user_id, endpoint.token).to_dict(ResultCode.RC_SUCCESS),
                     endpoint.response()
                 )
+
+    def handle_search_rooms_by_prefecture(self, request: dict):
+        endpoint: SearchRoomsByPrefecture = SearchRoomsByPrefecture.request(request)
+        if endpoint is None:
+            return self.error(ResultCode.RC_CREATE_ROOM_ERROR, 'The field is invalied.')
+        else:
+            user_id = endpoint.user_id
+            token = endpoint.token
+            if UserManager.validate(user_id, token):
+                rooms = RoomManager.get_rooms_by_prefecture(endpoint.pref_id)
+                endpoint.rooms = rooms
+                return self.success(
+                    DataHeaders(endpoint.user_id, endpoint.token).to_dict(ResultCode.RC_SUCCESS),
+                    endpoint.response()
+                )
+            else:
+                return self.error(ResultCode.RC_CREATE_ROOM_ERROR, 'The token is invalied.')
 
     def handle_404(self):
         return self.error(404, "Not found")

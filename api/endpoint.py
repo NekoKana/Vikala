@@ -248,6 +248,36 @@ class CreateRoom(Post):
         except InvaliedTypeException:
             return None
 
+class SearchRoomsByPrefecture(Post):
+    rooms: list
+    pref_id: int
+
+    user_id: int
+    token: str
+
+    def __init__(self, pref_id: int, user_id: int, token: str):
+        self.pref_id = pref_id
+        self.user_id = user_id
+        self.token = token
+
+    def response(self):
+        return {
+            'rooms': self.rooms
+        }
+
+    @classmethod
+    def request(cls, dic: dict):
+        try:
+            return SearchRoomsByPrefecture(pref_id=Validator.validate_int(dic['pref_id']),
+                            user_id=Validator.validate_int(dic['user_id']),
+                            token=Validator.validate_str(dic['token']))
+        except KeyError:
+            return None
+        except TypeError:
+            return None
+        except InvaliedTypeException:
+            return None
+
 class Validator:
     @classmethod
     def validate_int(cls, i: int):
