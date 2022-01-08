@@ -47,7 +47,7 @@ class Handler:
                 )
 
     def handle_404(self):
-        return make_response(jsonify({'result' : 404, 'message': 'Not found'}), 404, {"Content-Type": "application/json"})
+        return self.error(404, "Not found")
 
     def success(self, data_headers: dict, data: dict):
         return self.response({
@@ -57,8 +57,8 @@ class Handler:
 
     def error(self, result_code: int, message: str):
         return self.response({
-            'result_code': result_code,
-            'message': message
+            'data_headers': DataHeaders(-1, "").to_dict(result_code),
+            'data': message
         }, 400)
 
     def response(self, data: dict, http_status: int):
