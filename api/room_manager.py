@@ -101,7 +101,6 @@ class RoomManager:
                 users.append({
                     "name": user.name,
                     "user_id": user.user_id,
-                    "email": user.email,
                     "birthday": user.birthday,
                     "city": user.city,
                 })
