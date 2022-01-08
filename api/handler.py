@@ -11,7 +11,7 @@ class Handler:
     def handle_information(self):
         endpoint: Information = Information(api.server.VERSION)
         return self.success(
-            DataHeaders.dummy(ResultCode.RC_SUCCESS),
+            DataHeaders(-1, "").to_dict(ResultCode.RC_SUCCESS),
             endpoint.response()
         )
 
