@@ -45,3 +45,12 @@ Neon 用の Web API です。
 
 #### レスポンス
 なし
+
+### 県IDから市一覧を取得 ( /get_city )
+### リクエスト
+- pref_id: int
+
+### レスポンス
+- city: list
+  - city_id: int
+  - city_name: string
