@@ -159,3 +159,12 @@ Neon 用の Web API です。
 
 ### レスポンス
 なし
+
+### ルームに参加 ( /join_room )
+### リクエスト
+- room_id: int
+- user_id: int
+- token: str
+
+### レスポンス
+なし
