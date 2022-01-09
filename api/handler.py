@@ -4,7 +4,7 @@ from .data_headers import DataHeaders
 from .result_code import ResultCode
 from .endpoint import Information, SignUp, Login, GetUser, AddTopics, GetCity, \
 CreateRoom, GetRoom, SearchRoomsByPrefecture, SearchRoomsByCity, GetRoomsByUserId, \
-GetUsersByRoomId, RenameRoom
+GetUsersByRoomId, RenameRoom, JoinRoom
 from .models.user import User
 from .models.room import Room
 from .user_manager import UserManager
@@ -190,6 +190,27 @@ class Handler:
             else:
                 return self.error(ResultCode.RC_GET_ROOM_ERROR, 'The token is invalied.')
 
+    def handle_join_room(self, request: dict):
+        endpoint: JoinRoom = JoinRoom.request(request)
+        if endpoint is None:
+            return self.error(ResultCode.RC_JOIN_ROOM_ERROR, 'The field is invalied.')
+        else:
+            user_id = endpoint.user_id
+            token = endpoint.token
+            if UserManager.validate(user_id, token):
+                room = RoomManager.get_room(endpoint.room_id)
+                if room is None:
+                    return self.error(ResultCode.RC_JOIN_ROOM_ERROR, 'The room is not found.')
+                else:
+                    res = RoomManager.join_room(endpoint.room_id, user_id)
+                    return self.success(
+                        DataHeaders(user_id, token).to_dict(ResultCode.RC_SUCCESS),
+                        endpoint.response()
+                    )
+            else:
+                return self.error(ResultCode.RC_JOIN_ROOM_ERROR, 'The token is invalied.')
+                
+
     def handle_get_rooms_by_user_id(self, request: dict):
         endpoint: GetRoomsByUserId = GetRoomsByUserId.request(request)
         if endpoint is None:
@@ -199,15 +220,12 @@ class Handler:
             token = endpoint.token
             if UserManager.validate(user_id, token):
                 rooms: list = RoomManager.get_rooms_by_user_id(user_id)
-                if not rooms:
-                    return self.error(ResultCode.RC_GET_ROOMS_BY_USER_ID_ERROR, 'The user_id is invalied.')
-                else:
-                    endpoint.rooms = rooms
+                endpoint.rooms = rooms
 
-                    return self.success(
-                        DataHeaders(user_id, token).to_dict(ResultCode.RC_SUCCESS),
-                        endpoint.response()
-                    )
+                return self.success(
+                    DataHeaders(user_id, token).to_dict(ResultCode.RC_SUCCESS),
+                    endpoint.response()
+                )
             else:
                 return self.error(ResultCode.RC_GET_ROOM_ERROR, 'The token is invalied.')
 

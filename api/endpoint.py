@@ -351,6 +351,33 @@ class GetRoom(Post):
         except InvaliedTypeException:
             return None
 
+class JoinRoom(Post):
+    room_id: int
+    user_id: int
+    token: str
+
+    def __init__(self, room_id: int, user_id: int, token: str):
+        self.room_id = room_id
+        self.user_id = user_id
+        self.token = token
+
+    def response(self):
+        return []
+
+    @classmethod
+    def request(cls, dic: dict):
+        try:
+            return JoinRoom(room_id=Validator.validate_int(dic['room_id']),
+                            user_id=Validator.validate_int(dic['user_id']),
+                            token=Validator.validate_str(dic['token']))
+        except KeyError:
+            return None
+        except TypeError:
+            return None
+        except InvaliedTypeException:
+            return None
+
+
 class GetRoomsByUserId(Post):
     rooms: list
     user_id: int

@@ -2,7 +2,7 @@ from flask import Flask, request
 from flask_cors import CORS
 from .endpoint import Information, SignUp, Login, GetUser, AddTopics, GetCity, \
 CreateRoom, GetRoom, SearchRoomsByPrefecture, SearchRoomsByCity, GetRoomsByUserId, \
-GetUsersByRoomId, RenameRoom
+GetUsersByRoomId, RenameRoom, JoinRoom
 from .handler import Handler
 from .config import Model, ENGINE, session
 
@@ -48,6 +48,10 @@ def create_room():
 @app.route('/get_room', methods=GetRoom.http_method())
 def get_room():
     return handler.handle_get_room(request.json)
+
+@app.route('/join_room', methods=JoinRoom.http_method())
+def join_room():
+    return handler.handle_join_room(request.json)
 
 @app.route('/get_rooms_by_user_id', methods=GetRoomsByUserId.http_method())
 def get_rooms_by_user_id():
