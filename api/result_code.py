@@ -13,6 +13,7 @@ class ResultCode:
     RC_GET_USERS_BY_ROOM_ID_ERROR        = 210
     RC_RENAME_ROOM_ERROR                 = 211
     RC_JOIN_ROOM_ERROR                   = 212
+    RC_GET_CHAT_HISTORY_ERROR            = 213
 
     RC_ERROR                             = 400
     RC_NOT_FOUND                         = 404

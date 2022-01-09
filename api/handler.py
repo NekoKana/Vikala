@@ -4,7 +4,7 @@ from .data_headers import DataHeaders
 from .result_code import ResultCode
 from .endpoint import Information, SignUp, Login, GetUser, AddTopics, GetCity, \
 CreateRoom, GetRoom, SearchRoomsByPrefecture, SearchRoomsByCity, GetRoomsByUserId, \
-GetUsersByRoomId, RenameRoom, JoinRoom
+GetUsersByRoomId, RenameRoom, JoinRoom, GetChatHistory
 from .models.user import User
 from .models.room import Room
 from .user_manager import UserManager
@@ -268,6 +268,27 @@ class Handler:
                     return self.error(ResultCode.RC_RENAME_ROOM_ERROR, 'The room_id is invalied.')
             else:
                 return self.error(ResultCode.RC_RENAME_ROOM_ERROR, 'The token is invalied.')
+
+
+    def handle_get_chat_history(self, request: dict):
+        endpoint: GetChatHistory = GetChatHistory.request(request)
+        if endpoint is None:
+            return self.error(ResultCode.RC_GET_CHAT_HISTORY_ERROR, 'The field is invalied.')
+        else:
+            user_id = endpoint.user_id
+            token = endpoint.token
+            if UserManager.validate(user_id, token):
+                if RoomManager.has_room(endpoint.room_id):
+                    chats = RoomManager.get_chat_history(endpoint.room_id, endpoint.count)
+                    endpoint.history = chats
+                    return self.success(
+                        DataHeaders(user_id, token).to_dict(ResultCode.RC_SUCCESS),
+                        endpoint.response()
+                    )
+                else:
+                    return self.error(ResultCode.RC_GET_CHAT_HISTORY_ERROR, 'The room_id is invalied.')
+            else:
+                return self.error(ResultCode.RC_GET_CHAT_HISTORY_ERROR, 'The token is invalied.')
 
     def handle_404(self):
         return self.error(404, "Not found")

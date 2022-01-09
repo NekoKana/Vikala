@@ -2,7 +2,7 @@ from flask import Flask, request
 from flask_cors import CORS
 from .endpoint import Information, SignUp, Login, GetUser, AddTopics, GetCity, \
 CreateRoom, GetRoom, SearchRoomsByPrefecture, SearchRoomsByCity, GetRoomsByUserId, \
-GetUsersByRoomId, RenameRoom, JoinRoom
+GetUsersByRoomId, RenameRoom, JoinRoom, GetChatHistory
 from .handler import Handler
 from .config import Model, ENGINE, session
 
@@ -72,6 +72,10 @@ def search_rooms_by_city():
 @app.route('/rename_room', methods=RenameRoom.http_method())
 def rename_room():
     return handler.handle_rename_room(request.json)
+
+@app.route('/get_chat_history', methods=GetChatHistory.http_method())
+def get_chat_history():
+    return handler.handle_get_chat_history(request.json)
 
 
 @app.errorhandler(404)

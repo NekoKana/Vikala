@@ -460,6 +460,39 @@ class RenameRoom(Post):
         except InvaliedTypeException:
             return None
 
+class GetChatHistory(Post):
+    room_id: int
+    count: int
+    history: list
+
+    user_id: int
+    token: str
+
+    def __init__(self, room_id: int, count: int, user_id: int, token: str):
+        self.room_id = room_id
+        self.count = count
+        self.user_id = user_id
+        self.token = token
+
+    def response(self):
+        return {
+            "history": self.history
+        }
+
+    @classmethod
+    def request(cls, dic: dict):
+        try:
+            return GetChatHistory(room_id=Validator.validate_int(dic['room_id']),
+                                count=Validator.validate_int(dic['count']),
+                                user_id=Validator.validate_int(dic['user_id']),
+                                token=Validator.validate_str(dic['token']))
+        except KeyError:
+            return None
+        except TypeError:
+            return None
+        except InvaliedTypeException:
+            return None
+
 class Validator:
     @classmethod
     def validate_int(cls, i: int):

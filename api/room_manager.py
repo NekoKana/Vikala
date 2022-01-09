@@ -3,8 +3,10 @@ import random
 from .config import session
 from .models.room import Room
 from .models.user import User
+from .models.room_chat import RoomChat
 from .models.room_member import RoomMember
 from .user_manager import UserManager
+from sqlalchemy import desc
 
 class RoomManager:
     @classmethod
@@ -172,3 +174,20 @@ class RoomManager:
                     return room
         return None
                 
+    @classmethod
+    def get_chat_history(cls, room_id: int, count: int):
+        res = []
+        chats = session.query(RoomChat). \
+                        filter(RoomChat.room_id == room_id). \
+                        order_by(desc(RoomChat.timestamp)). \
+                        limit(count). \
+                        all()
+                        
+        for chat in chats:
+            res.append({
+                "member_id": chat.member_id,
+                "text": chat.text,
+                "timestamp": chat.timestamp
+            })
+
+        return res
